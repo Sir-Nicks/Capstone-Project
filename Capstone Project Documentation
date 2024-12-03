@@ -1,0 +1,106 @@
+
+This is a detailed outline of your WordPress Image Sharing Application project. It combines essential aspects of infrastructure provisioning, LAMP stack setup, WordPress deployment, S3 integration, and CloudFront optimization to ensure scalability, fault tolerance, and high availability.
+
+Project Overview
+The project aims to build a scalable, fault-tolerant WordPress Image Sharing Application using AWS services, including EC2, S3, RDS, CloudFront, Route 53, ELB, and ASG. It adopts a LAMP stack (Linux, Apache, MySQL, PHP) as the application architecture to ensure efficient web hosting and content management.
+
+Project Phases
+Stage 1: Application Infrastructure Provisioning
+This stage involves creating essential AWS resources like VPC, subnets, Internet Gateway, NAT Gateway, Route Tables, and Security Groups.
+
+Step-by-Step Actions:
+VPC Creation:
+
+Navigate to VPC Dashboard.
+Create a VPC with the following:
+Name: capstone-vpc
+IPv4 CIDR: 10.0.0.0/16
+Subnet Configuration:
+
+Create two public subnets in eu-west-2a and eu-west-2b.
+Create two private subnets in eu-west-2a and eu-west-2b.
+Internet Gateway Setup:
+
+Attach the Internet Gateway to your VPC.
+NAT Gateway Setup:
+
+Allocate an Elastic IP and associate it with a NAT Gateway.
+Route Table Configuration:
+
+Create a public Route Table and associate it with public subnets, pointing to the Internet Gateway.
+Create a private Route Table for private subnets, routing via the NAT Gateway.
+Security Groups:
+
+Set up security rules for your web server allowing HTTP (80) and SSH (22) traffic.
+Stage 2: S3 Buckets
+Two S3 buckets are created: one for media (public access) and one for code (private access).
+
+Steps:
+Create Media Bucket:
+
+Enable public access.
+Use AWS S3-managed encryption (SSE-S3).
+Create Code Bucket:
+
+Block all public access.
+Add bucket policies to configure permissions.
+
+Database Setup Stage
+Deploy an RDS MySQL instance to store WordPress data.
+
+Steps:
+Launch RDS Instance:
+Select MySQL engine with db.t2.micro instance type.
+Configure security groups to allow access from your web server.
+Stage 4: CloudFront Distribution
+Distribute media assets globally via CloudFront for faster load times.
+
+Steps:
+Set Media Bucket as the origin.
+Enable security settings, including WAF.
+IAM Role Dtage
+Create an IAM Role with AmazonS3FullAccess to allow EC2 instances to interact with S3.
+
+Web Server Setup stage
+Launch and configure an EC2 instance with Apache and WordPress.
+
+Steps:
+Instance Launch:
+
+Use Red Hat Enterprise Linux as the AMI.
+Attach the IAM role and configure user data for Apache installation.
+WordPress Setup:
+
+Install PHP, MySQL, and WordPress.
+Configure wp-config.php to point to the RDS database.
+Stage 7: Apache Configuration
+Configure Apache to redirect media requests to the CloudFront URL.
+
+Steps:
+Update .htaccess in /var/www/html:
+bash
+Copy code
+RewriteRule ^wp-content/uploads/(.*)$ https://your-cloudfront-endpoint/$1 [R=301,NC]
+Enable .htaccess overrides in the Apache configuration file.
+Stage 8: Automations with AWS CLI & Crontab
+Use AWS CLI to automate synchronization between EC2 and S3 buckets.
+
+Steps:
+Install AWS CLI:
+bash
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+Automate S3 sync with Crontab:
+Add the following line to /etc/crontab:
+bash
+
+* * * * * ec2-user /usr/local/bin/aws s3 sync --delete s3://your-code-bucket-name /var/www/html/
+Stage 9: WordPress Website Setup
+Finalize WordPress installation, upload media, and publish the first post.
+
+Steps:
+Access the WordPress installation page via your EC2 public IP.
+Complete the setup by creating admin credentials.
+Explore the dashboard to upload media and create content.
